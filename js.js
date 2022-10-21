@@ -18,11 +18,18 @@ const Canvas = {
       ctx.stroke();
     }
   },
-  update: function () {
+  clear: function () {
     ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+  },
+  update: function () {
+    Canvas.clear();
+
     Canvas.drawCanvas();
+
     Player.drawPlayer();
+
     Player.newPos();
+
     requestAnimationFrame(Canvas.update);
   },
 };
@@ -32,52 +39,45 @@ function Car(x, y, h, w, dy) {
   (this.x = x), (this.y = y), (this.w = w), (this.h = h), (this.dy = dy);
 }
 
+const eventListeners = {
+  keyDown: function (e) {
+    if (e.key == "ArrowRight" || e.key == "Right") {
+      Player.moveRight();
+    } else if (e.key == "ArrowLeft" || e.key == "Left") {
+      Player.moveLeft();
+    }
+  },
+  keyUp: function () {
+    Player.dy = 0;
+    Player.dx = 0;
+  }
+}
+
 const Player = {
-  x: 10,
-  y: 200 - 20,
+  x: 200,
+  y: 400 - 25,
   w: 20,
   h: 20,
   dx: 0,
   dy: 0,
   speed: 5,
-  keyPressDown: function (e) {
-    if (e.key == "ArrowUp" || e.key == "Up") {
-        Player.moveUp();
-    } else if (e.key == "ArrowDown" || e.key == "Down") {
-        Player.moveDown();
-    } else if (e.key == "ArrowLeft" || e.key == "Left") {
-        Player.moveLeft();
-    } else if (e.key == "ArrowRight" || e.key == "Right") {
-        Player.moveRight();
-    }
-  },
-  keyPressUp: function (e) {
-    console.log("key up")
-    Player.dx = 0;
-    Player.dy = 0;
-  },
-  moveUp: function () {
-    this.dy -= this.speed;
-  },
-  moveDown: function () {
-    this.dy += this.speed;
-  },
-  moveLeft: function () {
-    this.dx -= this.speed;
-  },
-  moveRight: function () {
-    this.dx += this.speed;
-  },
   drawPlayer: function () {
     ctx.drawImage(Frog, Player.x, Player.y, Player.w, Player.h);
   },
+  moveLeft: function () {
+    this.dx = -this.speed;
+  },
+  moveRight: function () {
+    this.dx = +this.speed;
+  },
   newPos: function () {
-    this.x += this.dx;
-    this.y += this.dy;
+    Player.x += Player.dx;
+    Player.y += Player.dy;
   },
 };
 
+
 Canvas.update();
 
-document.addEventListener("keydown", Player.keyPressDown);
-document.addEventListener("keyup", Player.keyPressUp);
+document.addEventListener("keydown", eventListeners.keyDown);
+document.addEventListener("keyup", eventListeners.keyUp);
