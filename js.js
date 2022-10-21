@@ -3,6 +3,10 @@ const ctx = canvas.getContext("2d");
 const Frog = document.getElementById("source");
 let test = 5;
 
+function Car(x, y, h, w, dy) {//Car constructor
+  (this.x = x), (this.y = y), (this.w = w), (this.h = h), (this.dy = dy);
+}
+
 const Canvas = {
   lanes: 10,
   width: canvasElement.width,
@@ -23,21 +27,14 @@ const Canvas = {
   },
   update: function () {
     Canvas.clear();
-
     Canvas.drawCanvas();
-
     Player.drawPlayer();
-
     Player.newPos();
-
     requestAnimationFrame(Canvas.update);
   },
+  generateCars: function() {
+  }
 };
-
-function Car(x, y, h, w, dy) {
-  //Car constructor
-  (this.x = x), (this.y = y), (this.w = w), (this.h = h), (this.dy = dy);
-}
 
 const eventListeners = {
   keyDown: function (e) {
@@ -55,12 +52,12 @@ const eventListeners = {
 
 const Player = {
   x: 200,
-  y: 400 - 25,
-  w: 20,
-  h: 20,
+  y: 400 - 30,
+  w: 25,
+  h: 25,
   dx: 0,
   dy: 0,
-  speed: 5,
+  speed: 4,
   drawPlayer: function () {
     ctx.drawImage(Frog, Player.x, Player.y, Player.w, Player.h);
   },
@@ -73,9 +70,17 @@ const Player = {
   newPos: function () {
     Player.x += Player.dx;
     Player.y += Player.dy;
+    Player.collisionDetection()
   },
+  collisionDetection: function(){
+    if(Player.x > canvasElement.width - Player.w){
+      Player.x = canvasElement.width - Player.w
+    }
+    if(Player.x < 0){
+      Player.x = 0 
+    }
+  }
 };
-
 
 Canvas.update();
 
