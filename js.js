@@ -1,16 +1,58 @@
 const canvasElement = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const Frog = document.getElementById("source");
-let test = 5;
 
-function Car(x, y, h, w, dy) {//Car constructor
-  (this.x = x), (this.y = y), (this.w = w), (this.h = h), (this.dy = dy);
+function Car(x, y, h, w, dy,speed) {
+  //Car constructor
+  this.x = x, 
+  this.y = y, 
+  this.w = w, 
+  this.h = h, 
+  this.dy = dy,
+  this.speed = speed,
+  this.newPos = function () {
+    this.y += this.dy;
+  }
 }
+
+const Traffic = {
+  vehicles: [],
+  makeCars: function(){
+    for(let i = 0; i < 2; i++){
+      let car = new Car(0, 0, 100, 40,0,5)
+      this.vehicles.push(car)
+    }
+  },
+  newPos: function(){
+    this.vehicles.forEach(car => {
+      ctx.fillRect(car.x, car.y, car.w, car.h)
+    })
+  }
+}
+
 
 const Canvas = {
   lanes: 10,
   width: canvasElement.width,
   height: canvasElement.height,
+  update: function() {
+    Canvas.clear()
+    Canvas.drawCanvas()
+
+    Traffic.vehicles.forEach( car=>{
+      car.newPos()
+    })
+
+    Traffic.newPos()
+
+    Player.drawPlayer()
+    Player.newPos();
+
+
+
+
+    requestAnimationFrame(Canvas.update);
+  },
   drawCanvas: function () {
     for (let i = this.width; i > 0; i -= this.width / this.lanes) {
       //Draw dottes lane lines across X axis
@@ -24,15 +66,7 @@ const Canvas = {
   },
   clear: function () {
     ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-  },
-  update: function () {
-    Canvas.clear();
-    Canvas.drawCanvas();
-    Player.drawPlayer();
-    Player.newPos();
-    requestAnimationFrame(Canvas.update);
-  },
-  generateCars: function() {
+    console.log("cleared canvas")
   }
 };
 
@@ -47,8 +81,9 @@ const eventListeners = {
   keyUp: function () {
     Player.dy = 0;
     Player.dx = 0;
-  }
-}
+  },
+};
+
 
 const Player = {
   x: 200,
@@ -70,18 +105,19 @@ const Player = {
   newPos: function () {
     Player.x += Player.dx;
     Player.y += Player.dy;
-    Player.collisionDetection()
+    Player.collisionDetection();
   },
-  collisionDetection: function(){
-    if(Player.x > canvasElement.width - Player.w){
-      Player.x = canvasElement.width - Player.w
+  collisionDetection: function () {
+    if (Player.x > canvasElement.width - Player.w) {
+      Player.x = canvasElement.width - Player.w;
     }
-    if(Player.x < 0){
-      Player.x = 0 
+    if (Player.x < 0) {
+      Player.x = 0;
     }
   }
 };
 
+Traffic.makeCars()
 Canvas.update();
 
 document.addEventListener("keydown", eventListeners.keyDown);
