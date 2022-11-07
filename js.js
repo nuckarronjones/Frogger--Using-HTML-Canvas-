@@ -28,7 +28,9 @@ function Lane(xPos, laneSpeed){
   this.cars = []
 }
 
-function Car(x, y, h, w, speed) {
+function Car(x, y, h, w, speed,laneAssigned,id) {
+  this.laneIndex = laneAssigned,//example Traffic.lanes[3]
+  this.id = id,
   this.x = x,
   this.y = y,
   this.h = h,
@@ -42,18 +44,21 @@ Car.prototype.newPos = function(){
 }
 
 Car.prototype.playerCollisionCheck = function(Player){
-  console.log(this.y)
-  console.log(Player.y)
 
-  if(((this.y + this.h) > Player.y)){
-    if((Player.x + Player.w>= this.x >= Player.x)){
-      console.log("dead")
-    }
-  }
+
 }
 
+//if car goes beyond canvas, it deletes itself from the lane array, thus, not redrawn
 Car.prototype.renderCheck = function(){
+  if(this.y + this.h > Canvas.height){
+    console.log(this.x + " has passed threshold")
+    console.log(Traffic.lanes[this.laneIndex].cars)
+    Traffic.lanes[this.laneIndex].cars.filter((car)=>{
+      return this.id != car.id
+    })
 
+    console.log("car removed" + Traffic.lanes[this.laneIndex].length)
+  }
 }
 
 const Traffic = {
@@ -76,6 +81,7 @@ const Traffic = {
     ///////////////////////////////////////////////////DEBUG: add a condition to where cars stop generating and the game is over
 
       let debugLoopStop = 0
+      let id = 0;
 
       while(debugLoopStop < 1000){//add timer later
 
@@ -88,11 +94,15 @@ const Traffic = {
 
           let laneStart = this.lanes[randomLane].laneXStart
           let speed = this.lanes[randomLane].speed
-          let car = new Car(laneStart, -100, 100, Canvas.laneWidth,speed)
+
+          //ID, and the index of what lane the car is in, is used in the renderCheck to detect out of bounds. Car deletes itself from the array if it leaves canvas (no longer drawn)
+          let car = new Car(laneStart, -100, 100, Canvas.laneWidth,speed,randomLane,id)
 
           this.lanes[randomLane].cars.push(car)
 
           laneFound = true
+
+          id++
 
         }
         debugLoopStop++
@@ -104,6 +114,7 @@ const Traffic = {
       lane.cars.forEach((car)=>{
         ctx.fillRect(car.x,car.y,car.w,car.h)
         car.playerCollisionCheck(Player)
+        car.renderCheck()
       })
     })
 
@@ -121,7 +132,7 @@ const Traffic = {
 };
 
 const Canvas = {
-  numberOfLanes: 100,
+  numberOfLanes: 10,
   width: canvasElement.width,
   height: canvasElement.height,
   get laneWidth(){//use getter as object literals cant use 'this' like in constructors
