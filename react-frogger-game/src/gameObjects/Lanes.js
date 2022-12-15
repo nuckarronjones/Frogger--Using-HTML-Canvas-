@@ -1,7 +1,7 @@
-// function Lane(xPos, laneSpeed) {
-//   this.laneXStart = xPos;
-//   this.speed = laneSpeed;
-//   this.cars = [];
-// }
+function Lane(xPos, laneSpeed) {
+  this.laneXStart = xPos;
+  this.speed = laneSpeed;
+  this.cars = [];
+}
 
-// export default Lane;
+export default Lane;
